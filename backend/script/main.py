@@ -1,474 +1,128 @@
+from html import escape
+
 
 class Constructor:
     @staticmethod
-    def return_html_code_of_fake_instagram(autor: str, qnt_contas: int, qnt_posts: int):
-        contas = ''
-        for conta in range(0, qnt_contas):
-            contas += """
-<div class="flex flex-col items-center flex-shrink-0">
-    <div class="w-16 h-16 rounded-full p-0.5 bg-gray-100 md:w-20 md:h-20">
-        <div class="w-full h-full rounded-full p-0.5 bg-gradient-to-br from-pink-500
-        via-red-500 to-yellow-500">
-            <div class="w-full h-full rounded-full p-0.5 bg-white-100 flex items-center justify-center">
+    def generate_instagram_html(autor: dict, contas: list[dict], posts: list[dict]) -> str:
+        author_name = escape(autor["name"])
+        author_username = escape(autor["username"])
+        author_photo = escape(autor["profile_photo_url"], quote=True)
 
-                <img class="w-full h-full object-cover rounded-full"
-                src="https://www.bing.com/th/id/OIP.i4YH9hPP_yM3nXMIQDDkQwHaLL?w=193&h=292&c=8&rs=1&qlt=90&o=6&pid=ImgAns&rm=2"
-                alt="Foto de Perfil">
+        stories = "".join(
+            f"""
+            <div class="story">
+                <img src="{escape(conta['profile_photo_url'], quote=True)}" alt="Foto de {escape(conta['username'], quote=True)}">
+                <span>{escape(conta['username'])}</span>
+            </div>"""
+            for conta in contas
+        )
 
-            </div>
-        </div>
-        </div>
-        <span class="text-xs nt-1 w-16 text-center md:w-20">Desconhecido</span>
-</div>\n
-"""
-
-        posts = ''
-        for _, post in enumerate(range(0, qnt_posts)):
-            posts += f"""
-<article class="bg-white border border-gray-200 rounded-lg mb-4">
-
-    <header class="flex items-center justify-between p-3">
-        <div class="flex items-center gap-3">
-
-            <div class="w-10 h-10 rounded-full p-0.5 bg-gradient-to-br from-pink-500
-            via-red-500 to-yellow-500">
-                <div class="w-full h-full rounded-full p-0.5 bg-white-100 flex items-center justify-center">
-
-                    <img class="w-full h-full object-cover rounded-full"
-                    src="https://www.bing.com/th/id/OIP.i4YH9hPP_yM3nXMIQDDkQwHaLL?w=193&h=292&c=8&rs=1&qlt=90&o=6&pid=ImgAns&rm=2"
-                    alt="Foto de Perfil">
-
+        post_cards = "".join(
+            f"""
+            <article class="post">
+                <header class="post-header">
+                    <img src="{escape(post['profile_photo_url'], quote=True)}" alt="Foto de {escape(post['username'], quote=True)}">
+                    <div class="post-author">
+                        <strong>{escape(post['username'])}</strong>
+                        <span>{escape(post['location'])}</span>
+                    </div>
+                    <span class="more" aria-label="Mais opções">•••</span>
+                </header>
+                <img class="post-image" src="{escape(post['image_url'], quote=True)}" alt="Foto publicada por {escape(post['username'], quote=True)}">
+                <div class="post-content">
+                    <div class="post-actions" aria-hidden="true"><span>♡　♧　➤</span><span>♧</span></div>
+                    <strong class="likes">{escape(post['likes'])} curtidas</strong>
+                    <p><strong>{escape(post['username'])}</strong> {escape(post['caption'])}</p>
+                    <span class="comments">Ver todos os {escape(str(post['comments_count']))} comentários</span>
+                    <span class="time">{escape(post['time_ago'])}</span>
                 </div>
-            </div>
+            </article>"""
+            for post in posts
+        )
 
-            <div>
-                <p class="text-sm font-semibold">silvaaxz.dev</p>
-                <p class="text-xs text-gray-500">Parnaíba, Piauí</p>
-            </div>
-
-        </div>
-
-        <button>
-            <i class="bx bx-dots-horizontal-rounded"> </i>
-        </button>
-    </header>
-
-    <div class="bg-gray-100 relative">
-
-        <img 
-        class="w-full h-full object-cover"
-        src="https://th.bing.com/th/id/OIP.g6ZlYFCcSU7VYbukbD44sQHaJQ?w=132&h=180&c=7&r=0&o=7&pid=1.7&rm=3"
-        alt="Imagem de Post">
-
-    </div>
-
-    <div class="p-3">
-
-        <div class="flex items-center justify-between mb-3">
-
-            <div class="flex items-center gap-4">
-                <button>
-                    <i class="bx bx-heart text-2xl"></i>
-                </button>
-
-                <button>
-                    <i class="bx bx-message text-2xl"></i>
-                </button>
-
-                <button>
-                    <i class=" bx bx-send text-2xl"> </i>
-                </button>
-            </div>
-
-            <button>
-                <i class="bx bx-bookmark text-2xl"></i>
-            </button>
-
-        </div>
-
-        <p class="font-semibold text-sm mb-2">
-            1.234 curtidas
-        </p>
-
-        <p class="text-sm">
-            <span class="font-semibold">silvaaxz.dev</span>
-            <span class="text-slate-900/90">
-                Aprendendo com a vida e vivendo junto com ela! Querendo viver com ela ❤️.
-            </span>
-
-        </p>
-
-        <button class="text-sm text-gray-500 nt-1">
-            Ver todos os 42 comentários
-        </button>
-
-        <p class="text-xs text-gray-500 nt-2 uppercase">
-            há {_ + 1} horas
-        </p>
-
-    </div>
-
-
-</article>\n
-"""
-
-        code = f"""
-<!DOCTYPE html>
+        return f"""<!doctype html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clone Instagram - {autor}</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Feed de {author_name}</title>
+    <style>
+        * {{ box-sizing: border-box; }}
+        body {{ margin: 0; background: #fafafa; color: #262626; font: 14px Arial, sans-serif; }}
+        .topbar {{ height: 62px; background: #fff; border-bottom: 1px solid #dbdbdb; display: flex; align-items: center; justify-content: center; }}
+        .topbar-inner {{ width: min(975px, 100%); padding: 0 20px; display: flex; align-items: center; justify-content: space-between; }}
+        .brand {{ font: italic bold 25px Georgia, serif; }}
+        .owner {{ color: #8e8e8e; }}
+        main {{ width: min(614px, 100%); margin: 28px auto; }}
+        .stories, .post {{ background: #fff; border: 1px solid #dbdbdb; border-radius: 4px; }}
+        .stories {{ display: flex; gap: 16px; overflow-x: auto; padding: 16px; margin-bottom: 24px; }}
+        .story {{ min-width: 62px; text-align: center; font-size: 11px; }}
+        .story img {{ width: 58px; height: 58px; object-fit: cover; border-radius: 50%; padding: 2px; border: 2px solid #d62976; }}
+        .story span {{ display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 5px; }}
+        .post {{ margin-bottom: 24px; }}
+        .post-header {{ height: 60px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; }}
+        .post-header img {{ width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }}
+        .post-author {{ display: flex; flex: 1; flex-direction: column; gap: 3px; }}
+        .post-author span, .comments, .time {{ color: #8e8e8e; font-size: 12px; }}
+        .more {{ letter-spacing: 2px; }}
+        .post-image {{ display: block; width: 100%; max-height: 760px; object-fit: cover; background: #efefef; }}
+        .post-content {{ padding: 12px 14px 14px; }}
+        .post-actions {{ display: flex; justify-content: space-between; font-size: 24px; margin-bottom: 10px; }}
+        .likes {{ display: block; margin-bottom: 8px; }}
+        .post-content p {{ margin: 0 0 8px; line-height: 1.5; }}
+        .comments, .time {{ display: block; margin-top: 8px; }}
+        @media (max-width: 640px) {{
+            .topbar {{ height: 54px; }}
+            main {{ margin: 0 auto; }}
+            .stories, .post {{ border-left: 0; border-right: 0; border-radius: 0; }}
+            .post {{ margin-bottom: 8px; }}
+        }}
+    </style>
 </head>
-<body class="min-h-screen bg-gray-100 text-slate-900">
-
-    <header class="sticky top-0 z-50 bg-white border-b border-grays-200">
-        <div class="max-w-5xl mx-auto px-4">
-            <div class="flex items-center justify-between h-14 md:h-16">
-
-                <h1 class="text-xl font-semibold">Instagram</h1>
-
-                <button class="md:hidden">
-                    <i class="bx bx-menu"></i>
-                </button>
-
-                <div class="hidden md:flex items-center">
-                    <div class="relative">
-                        <input type="text" class="w-64 h-9 bg-gray-100 pr-4 pl-4 rounded-lg text-sm">
-                    </div>
-                </div>
-
-                <div class="hidden md:flex items-center gap-3">
-
-                    <button class="flex items-center">
-                        <i class="bx bx-home text-xl"></i>
-                    </button>
-
-                    <button class="flex items-center">
-                        <i class="bx bx-search text-xl"></i>
-                    </button>
-
-                    <button class="flex items-center">
-                        <i class="bx bx-plus text-xl"></i>
-                    </button>
-
-                    <button class="flex items-center">
-                        <i class="bx bx-heart text-xl"></i>
-                    </button>
-
-                    <button class="flex items-center">
-                        <i class="bx bx-user text-xl"></i>
-                    </button>
-
-                    <button class="w-7 h-7 rounded-full bg-gradient-to-br from-pink-500
-                        via-red-500 to-yellow-500">
-                    </button>
-
-                </div>
-
-            </div>
+<body>
+    <header class="topbar">
+        <div class="topbar-inner">
+            <strong class="brand">Instagram</strong>
+            <span class="owner">{author_name} · @{author_username}</span>
         </div>
-
     </header>
-
-    <main class="max-w-5xl mx-auto px-4 py-4 pb-20 md:px-8 md:py-8">
-        <div class="flex gap-8">
-
-            <div class="flex-1 max-w-lg mx-auto md:mx-0">
-
-                <section class="bg-white border border-gray-200 rounded-lg p-4 nb-4">
-
-                    <div class="flex gap-4 overflow-x-auto">
-                        <div class="flex flex-col items-center flex-shrink-0">
-                            <div class="w-16 h-16 rounded-full p-0.5 bg-gray-100 md:w-20 md:h-20">
-                                <div class="w-full h-full rounded-full p-0.5 bg-white">
-                                    <div class="w-full h-full rounded-full p-0.5 bg-gray-100 flex items-center justify-center">
-    
-                                        <span class="text-2xl text-gray-500">
-                                            +
-                                        </span>
-    
-                                    </div>
-                                </div>
-                            </div>
-                             <span class="text-xs nt-1 w-16 text-center md:w-20">Você</span>
-                        </div>
-    
-                        <div class="flex flex-col items-center flex-shrink-0">
-                            <div class="w-16 h-16 rounded-full p-0.5 bg-gray-100 md:w-20 md:h-20">
-                                <div class="w-full h-full rounded-full p-0.5 bg-gradient-to-br from-pink-500
-                                via-red-500 to-yellow-500">
-                                    <div class="w-full h-full rounded-full p-0.5 bg-white-100 flex items-center justify-center">
-            
-                                        <img class="w-full h-full object-cover rounded-full"
-                                        src="https://www.bing.com/th/id/OIP.i4YH9hPP_yM3nXMIQDDkQwHaLL?w=193&h=292&c=8&rs=1&qlt=90&o=6&pid=ImgAns&rm=2"
-                                        alt="Foto de Perfil">
-            
-                                    </div>
-                                </div>
-                                </div>
-                                <span class="text-xs nt-1 w-16 text-center md:w-20">Jefferson</span>
-                        </div>
-
-                        {contas}
-
-                </section>
-
-                <article class="bg-white border border-gray-200 rounded-lg mb-4">
-
-                    <header class="flex items-center justify-between p-3">
-                        <div class="flex items-center gap-3">
-
-                            <div class="w-10 h-10 rounded-full p-0.5 bg-gradient-to-br from-pink-500
-                            via-red-500 to-yellow-500">
-                                <div class="w-full h-full rounded-full p-0.5 bg-white-100 flex items-center justify-center">
-            
-                                    <img class="w-full h-full object-cover rounded-full"
-                                    src="https://www.bing.com/th/id/OIP.i4YH9hPP_yM3nXMIQDDkQwHaLL?w=193&h=292&c=8&rs=1&qlt=90&o=6&pid=ImgAns&rm=2"
-                                    alt="Foto de Perfil">
-            
-                                </div>
-                            </div>
-
-                            <div>
-                                <p class="text-sm font-semibold">silvaaxz.dev</p>
-                                <p class="text-xs text-gray-500">Parnaíba, Piauí</p>
-                            </div>
-
-                        </div>
-
-                        <button>
-                            <i class="bx bx-dots-horizontal-rounded"> </i>
-                        </button>
-                    </header>
-
-                    <div class="bg-gray-100 relative">
-
-                        <img 
-                        class="w-full h-full object-cover"
-                        src="https://th.bing.com/th/id/OIP.g6ZlYFCcSU7VYbukbD44sQHaJQ?w=132&h=180&c=7&r=0&o=7&pid=1.7&rm=3"
-                        alt="Imagem de Post">
-
-                    </div>
-
-                    <div class="p-3">
-
-                        <div class="flex items-center justify-between mb-3">
-
-                            <div class="flex items-center gap-4">
-                                <button>
-                                    <i class="bx bx-heart text-2xl"></i>
-                                </button>
-    
-                                <button>
-                                    <i class="bx bx-message text-2xl"></i>
-                                </button>
-    
-                                <button>
-                                    <i class=" bx bx-send text-2xl"> </i>
-                                </button>
-                            </div>
-
-                            <button>
-                                <i class="bx bx-bookmark text-2xl"></i>
-                            </button>
-
-                        </div>
-
-                        <p class="font-semibold text-sm mb-2">
-                            1.234 curtidas
-                        </p>
-    
-                        <p class="text-sm">
-                            <span class="font-semibold">silvaaxz.dev</span>
-                            <span class="text-slate-900/90">
-                                Aprendendo com a vida e vivendo junto com ela! Querendo viver com ela ❤️.
-                            </span>
-    
-                        </p>
-
-                        <button class="text-sm text-gray-500 nt-1">
-                            Ver todos os 42 comentários
-                        </button>
-
-                        <p class="text-xs text-gray-500 nt-2 uppercase">
-                            há 2 horas
-                        </p>
-
-                    </div>
-
-
-                </article>
-
-                {posts}
-
+    <main>
+        <section class="stories" aria-label="Contas">
+            <div class="story">
+                <img src="{author_photo}" alt="Foto de {escape(author_username, quote=True)}">
+                <span>{author_username}</span>
             </div>
-
-            <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
-
-                <div class="flex items-center justify-around px-4">
-
-                    <button class="p-2">
-                        <i class="bx bx-home text-2xl"></i>
-                    </button>
-
-                    <button class="p-2">
-                        <i class="bx bx-search text-2xl"></i>
-                    </button>
-
-                    <button class="p-2">
-                        <i class="bx bx-plus text-2xl"></i>
-                    </button>
-
-                    <button class="p-2">
-                        <i class=" bx bx-heart text-2xl"></i>
-                    </button>
-
-                     <button class="p-2">
-                        <i class=" bx bx-user text-2xl"></i>
-                    </button>
-
-                </div>
-
-            </nav>
-
-            <aside class="hidden md:block w-80 flex-shrink-0">
-
-                <div class="sticky top-20">
-
-                    <div class="flex items-center justify-between mb-3">
-
-                        <div class="flex items-center gap-3">
-
-                            <img 
-                            class="w-14 h-14 object-cover rounded-full"
-                            src="https://www.bing.com/th/id/OIP.i4YH9hPP_yM3nXMIQDDkQwHaLL?w=193&h=292&c=8&rs=1&qlt=90&o=6&pid=ImgAns&rm=2"
-                            alt="Imagem de Perfil">
-
-                            <div>
-                                <p class="text-sm font-semibold">silvaaxz.dev</p>
-                                <p class="text-sm text-gray-500">Jefferson Silva</p>
-                            </div>
-
-                        </div>
-
-                        <button class="text-blue-500 text-sm font-semibold">
-                            Trocar
-                        </button>
-
-                    </div>
-
-                    <div class="mb-4">
-
-                        <div class="flex items-center justify-between mb-4">
-                            
-                            <span class="text-sm font-semibold text-gray-500">
-                                Sugestões para você
-                            </span>
-
-                            <button class="text-xs font-semibold">
-                                Ver tudo
-                            </button>
-                        </div>
-
-                    </div>
-
-                    <div class="flex flex-col gap-3">
-
-                        <div class="flex items-center justify-between">
-
-                            <div class="flex items-center gap-3">
-
-                                <img
-                                class="w-8 h-8 rounded-full object-cover"
-                                src="https://www.bing.com/th/id/OIP.i4YH9hPP_yM3nXMIQDDkQwHaLL?w=193&h=292&c=8&rs=1&qlt=90&o=6&pid=ImgAns&rm=2"
-                                alt="Imagem do Amigo">
-
-                                <div>
-                                    <p class="text-sm font-semibold">silvaaxz.dev</p>
-                                    <p class="text-sm text-gray-500">Sugerido para você</p>
-                                </div>
-
-                            </div>
-
-                            <button class="text-blue-500 text-xs font-semibold">
-                                Seguir
-                            </button>
-
-                        </div>
-
-                         <div class="flex items-center justify-between">
-
-                            <div class="flex items-center gap-3">
-
-                                <img
-                                class="w-8 h-8 rounded-full object-cover"
-                                src="https://www.bing.com/th/id/OIP.i4YH9hPP_yM3nXMIQDDkQwHaLL?w=193&h=292&c=8&rs=1&qlt=90&o=6&pid=ImgAns&rm=2"
-                                alt="Imagem do Amigo">
-
-                                <div>
-                                    <p class="text-sm font-semibold">silvaaxz.dev</p>
-                                    <p class="text-sm text-gray-500">Sugerido para você</p>
-                                </div>
-
-                            </div>
-
-                            <button class="text-blue-500 text-xs font-semibold">
-                                Seguir
-                            </button>
-
-                        </div>
-
-                         <div class="flex items-center justify-between">
-
-                            <div class="flex items-center gap-3">
-
-                                <img
-                                class="w-8 h-8 rounded-full object-cover"
-                                src="https://www.bing.com/th/id/OIP.i4YH9hPP_yM3nXMIQDDkQwHaLL?w=193&h=292&c=8&rs=1&qlt=90&o=6&pid=ImgAns&rm=2"
-                                alt="Imagem do Amigo">
-
-                                <div>
-                                    <p class="text-sm font-semibold">silvaaxz.dev</p>
-                                    <p class="text-sm text-gray-500">Sugerido para você</p>
-                                </div>
-
-                            </div>
-
-                            <button class="text-blue-500 text-xs font-semibold">
-                                Seguir
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                    <div class="mt-8">
-
-                        <p class="text-xs text-gray-500/68">
-                            Sobre · Ajuda · Imprensa · API · Carreiras ·
-                            Termos · Localizações · Idioma
-                        </p>
-
-                        <p class="text-xs text-gray-500/68 mt-4">
-                            © 2026 INSTRAGRAM CLONE - AULA TAILWIND
-                        </p>
-
-                    </div>
-
-                </div>
-
-            </aside>
-
-        </div>
-
+            {stories}
+        </section>
+        {post_cards}
     </main>
-    
 </body>
-</html>
-"""
-        return code
+</html>"""
 
-print(Constructor.return_html_code_of_fake_instagram('Jefferson', 20, 20))
+    @staticmethod
+    def return_html_code_of_fake_instagram(autor: str, qnt_contas: int, qnt_posts: int) -> str:
+        placeholder_photo = "https://placehold.co/160x160?text=Perfil"
+        placeholder_post = "https://placehold.co/720x720?text=Post"
+        author = {
+            "name": autor,
+            "username": autor,
+            "profile_photo_url": placeholder_photo,
+        }
+        contas = [
+            {"username": f"conta_{index + 1}", "profile_photo_url": placeholder_photo}
+            for index in range(qnt_contas)
+        ]
+        posts = [
+            {
+                "username": autor,
+                "profile_photo_url": placeholder_photo,
+                "location": "",
+                "image_url": placeholder_post,
+                "likes": "0",
+                "caption": "",
+                "comments_count": 0,
+                "time_ago": "há 1 hora",
+            }
+            for _ in range(qnt_posts)
+        ]
+        return Constructor.generate_instagram_html(author, contas, posts)
