@@ -1,5 +1,5 @@
 from django.http import HttpRequest
-from ninja import HttpError, Router, Schema
+from ninja import Router, Schema
 from pydantic import Field, HttpUrl
 
 from script.main import Constructor
@@ -49,9 +49,9 @@ def generate_code(request: HttpRequest, payload: GenerateInput):
 @app_router.get("/getcode", response={200: dict})
 def getcode(request: HttpRequest, autor: str, contas: int, posts: int):
     if not autor.strip() or len(autor) > 80:
-        raise HttpError(400, "O autor deve ter entre 1 e 80 caracteres.")
+        raise Exception("O autor deve ter entre 1 e 80 caracteres.")
     if not 0 <= contas <= MAX_ITEMS or not 0 <= posts <= MAX_ITEMS:
-        raise HttpError(400, f"Contas e posts devem estar entre 0 e {MAX_ITEMS}.")
+        raise Exception(f"Contas e posts devem estar entre 0 e {MAX_ITEMS}.")
 
     return 200, {
         "code": Constructor.return_html_code_of_fake_instagram(autor, contas, posts)
