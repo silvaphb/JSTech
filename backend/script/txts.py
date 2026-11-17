@@ -1,0 +1,3 @@
+HTML_CODE_FAKE_INTAGRAM_PROJECT = """
+
+"""
