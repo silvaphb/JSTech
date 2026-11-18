@@ -195,7 +195,7 @@ function generateInstagramHtml(autor, contas, posts) {
                         <p class="text-xs text-gray-500/68">
                             Sobre · Ajuda · Imprensa · API · Carreiras · Termos · Localizações · Idioma
                         </p>
-                        <p class="text-xs text-gray-500/68 mt-4">© 2026 INSTAGRAM CLONE</p>
+                        <p class="text-xs text-gray-500/68 mt-4">© 2026 INSTAGRAM CLONE - AULA TAILWIND</p>
                     </div>
                 </div>
             </aside>
