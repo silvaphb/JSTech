@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#f6f5f2">
-    <title>Feed Studio — gerador de HTML</title>
+    <title>Jeffino Studios</title>
     <style>
         :root {
             color-scheme: light;
@@ -66,8 +66,6 @@
         .message.error { color: #b42318; }
         .output-panel { position: sticky; top: 20px; }
         .output-body { padding: 18px; }
-        .api-field { margin-bottom: 15px; }
-        .api-field input { margin-top: 7px; }
         .output-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
         .output-actions button { min-height: 36px; padding: 0 11px; font-size: 12px; }
         #output { min-height: 255px; font: 11px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; background: #222126; color: #e9e7ef; border: 0; }
@@ -92,13 +90,13 @@
 <body>
     <main class="shell">
         <header class="topline">
-            <div class="brand"><span class="brand-mark">f</span> Feed Studio</div>
-            <span class="badge">Gerador de layout · HTML pronto para usar</span>
+            <div class="brand"><span class="brand-mark">J</span> Jeffino Studios</div>
+            <span class="badge">Gerador de layout PAGO</span>
         </header>
         <section class="intro">
-            <span class="eyebrow">Seu conteúdo, seu layout</span>
+            <span class="eyebrow">R$10,00 Por pessoa</span>
             <h1>Monte seu feed.<br>Gere o código.</h1>
-            <p>Defina o autor, as contas e os posts. Ao gerar, você recebe uma página HTML completa para copiar, baixar ou visualizar.</p>
+            <p>Defina o autor, as contas e os posts. Ao gerar, você recebe uma página HTML completa para copiar, baixar e colar.</p>
         </section>
         <div class="workspace">
             <section class="panel">
@@ -115,11 +113,11 @@
                         <div class="fields">
                             <div class="field">
                                 <label for="author-name">Nome</label>
-                                <input id="author-name" name="author-name" maxlength="80" placeholder="Ex.: Ana Silva" required>
+                                <input id="author-name" name="author-name" maxlength="80" placeholder="Ex.: Ailuj Zul" required>
                             </div>
                             <div class="field">
                                 <label for="author-username">Nome de usuário</label>
-                                <input id="author-username" name="author-username" maxlength="30" placeholder="Ex.: anasilva" required>
+                                <input id="author-username" name="author-username" maxlength="30" placeholder="Ex.: ailujzul" required>
                             </div>
                             <div class="field full">
                                 <label for="author-photo">Link da foto de perfil</label>
@@ -159,186 +157,17 @@
                     <span class="step">02 — Copie ou baixe</span>
                 </div>
                 <div class="output-body">
-                    <div class="field api-field">
-                        <label for="api-url">Endereço da API</label>
-                        <input id="api-url" type="url" value="http://localhost:8000/api/v1/codes/generate" required>
-                    </div>
                     <div class="output-actions">
                         <button id="copy-button" class="secondary" type="button" disabled>Copiar código</button>
                         <button id="download-button" class="secondary" type="button" disabled>Baixar .html</button>
                     </div>
                     <textarea id="output" aria-label="Código HTML gerado" placeholder="O HTML gerado aparecerá aqui." readonly></textarea>
-                    <p class="hint">A página gerada é responsiva. Para enviar as informações, inicie o backend e configure acima o endereço da API.</p>
-                    <iframe id="preview" title="Pré-visualização do feed" sandbox=""></iframe>
+                    <p class="hint">A página gerada é responsiva. Todo o processamento acontece no seu navegador, sem precisar iniciar o backend.</p>
+                    <iframe id="preview" title="Pré-visualização do feed" sandbox="allow-scripts"></iframe>
                 </div>
             </section>
         </div>
     </main>
-    <script>
-        const MAX_ITEMS = 50;
-        const form = document.querySelector("#generator-form");
-        const accountCount = document.querySelector("#account-count");
-        const postCount = document.querySelector("#post-count");
-        const accountsFields = document.querySelector("#accounts-fields");
-        const postsFields = document.querySelector("#posts-fields");
-        const output = document.querySelector("#output");
-        const formMessage = document.querySelector("#form-message");
-        const generateButton = document.querySelector("#generate-button");
-        const copyButton = document.querySelector("#copy-button");
-        const downloadButton = document.querySelector("#download-button");
-
-        function escapeAttribute(value) {
-            return String(value ?? "").replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-        }
-
-        function readCards(container) {
-            return [...container.querySelectorAll(".item-card")].map((card) =>
-                Object.fromEntries([...card.querySelectorAll("[data-field]")].map((input) => [input.dataset.field, input.value]))
-            );
-        }
-
-        function accountMarkup(account, index) {
-            return `<fieldset class="item-card">
-                <legend class="item-card-title">Conta ${index + 1}</legend>
-                <div class="fields">
-                    <div class="field">
-                        <label for="account-${index}-username">Nome de usuário</label>
-                        <input id="account-${index}-username" data-field="username" maxlength="30" value="${escapeAttribute(account.username)}" placeholder="Ex.: conta${index + 1}" required>
-                    </div>
-                    <div class="field">
-                        <label for="account-${index}-photo">Link da foto de perfil</label>
-                        <input id="account-${index}-photo" data-field="profile_photo_url" type="url" value="${escapeAttribute(account.profile_photo_url)}" placeholder="https://exemplo.com/perfil.jpg" required>
-                    </div>
-                </div>
-            </fieldset>`;
-        }
-
-        function postMarkup(post, index) {
-            return `<fieldset class="item-card">
-                <legend class="item-card-title">Post ${index + 1}</legend>
-                <div class="fields">
-                    <div class="field">
-                        <label for="post-${index}-username">Nome de usuário</label>
-                        <input id="post-${index}-username" data-field="username" maxlength="30" value="${escapeAttribute(post.username)}" placeholder="Ex.: anasilva" required>
-                    </div>
-                    <div class="field">
-                        <label for="post-${index}-photo">Foto de perfil do post</label>
-                        <input id="post-${index}-photo" data-field="profile_photo_url" type="url" value="${escapeAttribute(post.profile_photo_url)}" placeholder="https://exemplo.com/perfil.jpg" required>
-                    </div>
-                    <div class="field full">
-                        <label for="post-${index}-image">Link da imagem do post</label>
-                        <input id="post-${index}-image" data-field="image_url" type="url" value="${escapeAttribute(post.image_url)}" placeholder="https://exemplo.com/post.jpg" required>
-                    </div>
-                    <div class="field">
-                        <label for="post-${index}-location">Localização</label>
-                        <input id="post-${index}-location" data-field="location" maxlength="100" value="${escapeAttribute(post.location)}" placeholder="Ex.: São Paulo, Brasil">
-                    </div>
-                    <div class="field">
-                        <label for="post-${index}-likes">Curtidas</label>
-                        <input id="post-${index}-likes" data-field="likes" maxlength="30" value="${escapeAttribute(post.likes)}" placeholder="Ex.: 1.234" required>
-                    </div>
-                    <div class="field full">
-                        <label for="post-${index}-caption">Legenda</label>
-                        <textarea id="post-${index}-caption" data-field="caption" maxlength="2000" placeholder="Escreva a legenda do post...">${escapeAttribute(post.caption)}</textarea>
-                    </div>
-                    <div class="field">
-                        <label for="post-${index}-comments">Quantidade de comentários</label>
-                        <input id="post-${index}-comments" data-field="comments_count" type="number" min="0" max="1000000" value="${escapeAttribute(post.comments_count)}" required>
-                    </div>
-                    <div class="field">
-                        <label for="post-${index}-time">Tempo da publicação</label>
-                        <input id="post-${index}-time" data-field="time_ago" maxlength="50" value="${escapeAttribute(post.time_ago)}" placeholder="Ex.: há 2 horas" required>
-                    </div>
-                </div>
-            </fieldset>`;
-        }
-
-        function renderCards(input, container, markup, fields) {
-            const count = Number(input.value);
-            if (!Number.isInteger(count) || count < 0 || count > MAX_ITEMS) {
-                input.setCustomValidity(`Informe um número entre 0 e ${MAX_ITEMS}.`);
-                input.reportValidity();
-                return;
-            }
-            input.setCustomValidity("");
-            const previous = readCards(container);
-            const cards = Array.from({ length: count }, (_, index) => ({ ...fields, ...previous[index] }));
-            container.innerHTML = cards.map(markup).join("");
-        }
-
-        accountCount.addEventListener("change", () => renderCards(accountCount, accountsFields, accountMarkup, { username: "", profile_photo_url: "" }));
-        postCount.addEventListener("change", () => renderCards(postCount, postsFields, postMarkup, {
-            username: "", profile_photo_url: "", image_url: "", location: "", likes: "", caption: "", comments_count: "0", time_ago: ""
-        }));
-        renderCards(accountCount, accountsFields, accountMarkup, { username: "", profile_photo_url: "" });
-        renderCards(postCount, postsFields, postMarkup, {
-            username: "", profile_photo_url: "", image_url: "", location: "", likes: "", caption: "", comments_count: "0", time_ago: ""
-        });
-
-        form.addEventListener("submit", async (event) => {
-            event.preventDefault();
-            formMessage.textContent = "";
-            formMessage.classList.remove("error");
-            if (!form.reportValidity()) return;
-
-            const apiUrl = document.querySelector("#api-url").value;
-            generateButton.disabled = true;
-            generateButton.textContent = "Gerando...";
-            try {
-                const response = await fetch(apiUrl, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        autor: {
-                            name: document.querySelector("#author-name").value,
-                            username: document.querySelector("#author-username").value,
-                            profile_photo_url: document.querySelector("#author-photo").value
-                        },
-                        contas: readCards(accountsFields),
-                        posts: readCards(postsFields)
-                    })
-                });
-                const result = await response.json();
-                if (!response.ok) {
-                    const detail = result.detail;
-                    throw new Error(Array.isArray(detail) ? detail.map((item) => item.msg).join(" ") : (detail || "Não foi possível gerar o código."));
-                }
-                output.value = result.code;
-                document.querySelector("#preview").srcdoc = result.code;
-                copyButton.disabled = false;
-                downloadButton.disabled = false;
-                formMessage.textContent = "Código gerado com sucesso. Você já pode copiar, baixar ou visualizar.";
-            } catch (error) {
-                formMessage.textContent = error instanceof TypeError
-                    ? "Não foi possível conectar à API. Verifique o endereço e se o backend está em execução."
-                    : error.message;
-                formMessage.classList.add("error");
-            } finally {
-                generateButton.disabled = false;
-                generateButton.innerHTML = "✦ &nbsp; Gerar código HTML";
-            }
-        });
-
-        copyButton.addEventListener("click", async () => {
-            try {
-                await navigator.clipboard.writeText(output.value);
-                formMessage.textContent = "Código copiado para a área de transferência.";
-                formMessage.classList.remove("error");
-            } catch {
-                output.focus();
-                output.select();
-                formMessage.textContent = "Selecione e copie o código manualmente.";
-            }
-        });
-
-        downloadButton.addEventListener("click", () => {
-            const file = new Blob([output.value], { type: "text/html;charset=utf-8" });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(file);
-            link.download = "meu-feed.html";
-            link.click();
-            URL.revokeObjectURL(link.href);
-        });
-    </script>
+    <script src="generator.js" defer></script>
 </body>
 </html>
