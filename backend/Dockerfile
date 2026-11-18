@@ -35,4 +35,4 @@ COPY --chown=appuser:appuser . .
 
 USER appuser
 
-CMD ["sh", "-c", "python manage.py makemigrations && python manage.py migrate && exec python manage.py runserver 0.0.0.0:8000"]
+CMD ["sh", "-c", "exec python manage.py runserver 0.0.0.0:8000"]
